@@ -19,6 +19,7 @@ package org.ops4j.pax.web.service.spi;
 import java.util.Collection;
 
 import org.osgi.framework.Bundle;
+import org.osgi.service.http.HttpContext;
 
 public class WebEvent {
 
@@ -59,6 +60,7 @@ public class WebEvent {
 	private long timestamp;
 	private String contextPath;
 	private Collection<Long> collisionIds;
+	private HttpContext httpContext;
 	
 	public WebEvent(WebEvent event, boolean replay) {
 		this.type = event.getType();
@@ -88,7 +90,12 @@ public class WebEvent {
 		this(type, contextPath, bundle, extenderBundle);
 		this.collisionIds = ids;
 	}
-	
+
+	public WebEvent(int type, String contextPath, Bundle bundle, Bundle extenderBundle, HttpContext httpContext) {
+		this(type, contextPath, bundle, extenderBundle);
+		this.httpContext = httpContext;
+	}
+
 	/**
 	 * @return the type
 	 */
@@ -145,6 +152,13 @@ public class WebEvent {
 		return collisionIds;
 	}
 
+	/**
+	 * @return the HTTP context
+	 */
+	public HttpContext getHttpContext() {
+		return httpContext;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */

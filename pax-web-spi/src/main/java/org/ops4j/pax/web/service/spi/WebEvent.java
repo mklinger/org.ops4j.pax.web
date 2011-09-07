@@ -167,7 +167,8 @@ public class WebEvent {
 		return "WebEvent [replay=" + replay + ", type=" + type + ", bundle="
 				+ bundle + ", extenderBundle=" + extenderBundle + ", cause="
 				+ cause + ", timestamp=" + timestamp + ", contextPath="
-				+ contextPath + ", collisionIds=" + collisionIds + "]";
+				+ contextPath + ", collisionIds=" + collisionIds
+				+ ", httpContext=" + httpContext + "]";
 	}
 
 }

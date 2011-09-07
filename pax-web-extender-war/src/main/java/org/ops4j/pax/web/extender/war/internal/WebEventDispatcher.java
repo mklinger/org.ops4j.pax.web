@@ -40,6 +40,7 @@ import org.ops4j.pax.web.service.spi.WebListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.Version;
 import org.osgi.service.event.Event;
@@ -74,7 +75,7 @@ public class WebEventDispatcher implements WebListener {
 		
 		this.executors = executors;
 		
-		this.webListenerTracker = new ServiceTracker(bundleContext, WebListener.class.getName(), new ServiceTrackerCustomizer() {
+		ServiceTrackerCustomizer serviceTrackerCustomizer = new ServiceTrackerCustomizer() {
             public Object addingService(ServiceReference reference) {
                 WebListener listener = (WebListener) bundleContext.getService(reference);
 
@@ -93,8 +94,19 @@ public class WebEventDispatcher implements WebListener {
                 listeners.remove(service);
                 bundleContext.ungetService(reference);
             }
-        });
+        };
+		this.webListenerTracker = new ServiceTracker(bundleContext, WebListener.class.getName(), serviceTrackerCustomizer);
         this.webListenerTracker.open();
+		try {
+			ServiceReference[] existingReferences = bundleContext.getServiceReferences(WebListener.class.getName(), null);
+			if (existingReferences != null) {
+				for (ServiceReference reference : existingReferences) {
+					serviceTrackerCustomizer.addingService(reference);
+				}
+			}
+		} catch (InvalidSyntaxException e) {
+			LOG.error("Error getting existing web listeners", e);
+		}
 	}
 	
 	 void destroy() {

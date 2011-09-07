@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
+import org.osgi.service.http.HttpService;
 
 public class WebEvent {
 
@@ -60,6 +61,7 @@ public class WebEvent {
 	private long timestamp;
 	private String contextPath;
 	private Collection<Long> collisionIds;
+	private HttpService httpService;
 	private HttpContext httpContext;
 	
 	public WebEvent(WebEvent event, boolean replay) {
@@ -70,6 +72,8 @@ public class WebEvent {
 		this.collisionIds = event.getCollisionIds();
 		this.cause = event.getCause();
 		this.timestamp = event.getTimestamp();
+		this.httpService = event.getHttpService();
+		this.httpContext = event.getHttpContext();
 		this.replay = replay;
 	}
 	
@@ -91,9 +95,10 @@ public class WebEvent {
 		this.collisionIds = ids;
 	}
 
-	public WebEvent(int type, String contextPath, Bundle bundle, Bundle extenderBundle, HttpContext httpContext) {
+	public WebEvent(int type, String contextPath, Bundle bundle, Bundle extenderBundle, HttpService httpService, HttpContext httpContext) {
 		this(type, contextPath, bundle, extenderBundle);
 		this.httpContext = httpContext;
+		this.httpService = httpService;
 	}
 
 	/**
@@ -153,6 +158,13 @@ public class WebEvent {
 	}
 
 	/**
+	 * @return the HTTP service.
+	 */
+	public HttpService getHttpService() {
+		return httpService;
+	}
+	
+	/**
 	 * @return the HTTP context
 	 */
 	public HttpContext getHttpContext() {
@@ -167,8 +179,7 @@ public class WebEvent {
 		return "WebEvent [replay=" + replay + ", type=" + type + ", bundle="
 				+ bundle + ", extenderBundle=" + extenderBundle + ", cause="
 				+ cause + ", timestamp=" + timestamp + ", contextPath="
-				+ contextPath + ", collisionIds=" + collisionIds
-				+ ", httpContext=" + httpContext + "]";
+				+ contextPath + ", collisionIds=" + collisionIds + ", httpService=" 
+				+ httpService + ", httpContext=" + httpContext + "]";
 	}
-
 }

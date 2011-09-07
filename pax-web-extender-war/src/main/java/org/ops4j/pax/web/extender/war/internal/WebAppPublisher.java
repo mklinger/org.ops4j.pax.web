@@ -184,7 +184,7 @@ class WebAppPublisher
                     m_webApp.accept( new RegisterWebAppVisitorHS( m_httpService ) );
                 }
                 m_webApp.setDeploymentState(WebApp.DEPLOYED_STATE);
-                m_eventDispatcher.webEvent(new WebEvent(WebEvent.DEPLOYED, "/"+m_webApp.getContextName(), m_webApp.getBundle(), m_bundleContext.getBundle(), m_webApp.getHttpContext()));
+                m_eventDispatcher.webEvent(new WebEvent(WebEvent.DEPLOYED, "/"+m_webApp.getContextName(), m_webApp.getBundle(), m_bundleContext.getBundle(), m_httpService, m_webApp.getHttpContext()));
             }
         }
 

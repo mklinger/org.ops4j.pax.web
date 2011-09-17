@@ -1,6 +1,9 @@
 package org.ops4j.pax.web.itest;
 
 import static org.junit.Assert.fail;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.MavenUtils.asInProject;
 
 import java.util.Dictionary;
 
@@ -11,26 +14,33 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.web.service.spi.WebEvent;
 import org.ops4j.pax.web.service.spi.WebListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
-
 /**
  * @author Achim Nierbeck
  */
 @RunWith(JUnit4TestRunner.class)
-public class Servlet3WarIntegrationTest extends ITestBase {
+public class JettyAnnotationWebappIntegrationTest extends ITestBase {
 
- Logger LOG = LoggerFactory.getLogger(Servlet3WarIntegrationTest.class);
+	Logger LOG = LoggerFactory
+			.getLogger(JettyAnnotationWebappIntegrationTest.class);
 
 	private Bundle installWarBundle;
 
 	private WebListener webListener;
-	
 
+	@Configuration
+	public static Option[] configurationDetailed() {
+		return options(mavenBundle().groupId("org.ops4j.pax.web.samples")
+				.artifactId("jetty-auth-config-fragment")
+				.version("2.0.0-SNAPSHOT"));
+	}
 
 	@Before
 	public void setUp() throws BundleException, InterruptedException {
@@ -39,8 +49,8 @@ public class Servlet3WarIntegrationTest extends ITestBase {
 		bundleContext.registerService(WebListener.class.getName(), webListener,
 				null);
 		String bundlePath = WEB_BUNDLE
-				+ "mvn:org.ops4j.pax.web.samples/helloworld-servlet3/2.0.0-SNAPSHOT/war?"
-				+ WEB_CONTEXT_PATH + "=/war3";
+				+ "mvn:org.mortbay.jetty/test-annotation-webapp/8.0.0.M2/war?"
+				+ WEB_CONTEXT_PATH + "=/test-annotation-webapp";
 		installWarBundle = bundleContext.installBundle(bundlePath);
 		installWarBundle.start();
 
@@ -68,7 +78,7 @@ public class Servlet3WarIntegrationTest extends ITestBase {
 	@Test
 	public void listBundles() {
 		for (Bundle b : bundleContext.getBundles()) {
-			if (b.getState() != Bundle.ACTIVE)
+			if (b.getState() != Bundle.ACTIVE && b.getState() != Bundle.RESOLVED)
 				fail("Bundle should be active: " + b);
 
 			Dictionary headers = b.getHeaders();
@@ -82,15 +92,23 @@ public class Servlet3WarIntegrationTest extends ITestBase {
 		}
 
 	}
-
+	
 	@Test
-	public void testWC() throws Exception {
+	public void testLoginPage() throws Exception {
 
-		testWebPath("http://127.0.0.1:8181/war3/hello", "<h1>Hello World</h1>");
-			
+		testWebPath("http://127.0.0.1:8181/test-annotation-webapp/login.html", "<H1> Enter your username and password to login </H1>");
+
 	}
 
-	
+	@Test
+	public void testLoginPageDoLogin() throws Exception {
+
+		testWebPath("http://127.0.0.1:8181/test-annotation-webapp/login.html", "<H1> Enter your username and password to login </H1>", 200, false );
+		
+//		testWebPath("http://127.0.0.1:8181/test-annotation-webapp/j_security_check", "role", 200, true);
+
+	}
+
 	private class WebListenerImpl implements WebListener {
 
 		private boolean event = false;

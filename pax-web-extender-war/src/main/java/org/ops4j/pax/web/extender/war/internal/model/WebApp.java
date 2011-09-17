@@ -665,7 +665,8 @@ public class WebApp
             .append( this.getClass().getSimpleName() )
             .append( "{" )
             .append( "displayName=" ).append( m_displayName )
-            .append( ",contextName=" ).append( m_contextName )            
+            .append( ",contextName=" ).append( m_contextName )    
+            .append( ",m_httpContext=" ).append( m_httpContext )
             .append( "}" )
             .toString();
     }

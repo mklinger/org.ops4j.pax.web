@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Option;
+import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
@@ -18,10 +20,15 @@ import org.osgi.framework.BundleException;
 public class WhiteboardIntegrationTest extends ITestBase {
 	
 	private Bundle installWarBundle;
+	
+	@Configuration
+	public static Option[] configure() {
+		return baseConfigure();
+	}
 
 	@Before
 	public void setUp() throws BundleException, InterruptedException {
-		String bundlePath = "mvn:org.ops4j.pax.web.samples/whiteboard/2.0.0-SNAPSHOT";
+		String bundlePath = "mvn:org.ops4j.pax.web.samples/whiteboard/" + getProjectVersion();
 		installWarBundle = bundleContext.installBundle(bundlePath);
 		installWarBundle.start();
 		
